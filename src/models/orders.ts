@@ -36,6 +36,7 @@ const orderSchema=new mongoose.Schema({
     ticket: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ticket'
+        //This ObjectId points to a document in the Ticket collection
     },
 },{
     toJSON: {

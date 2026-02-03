@@ -5,6 +5,7 @@ import { body } from "express-validator";
 import { Ticket } from "../models/tickets";
 import { Order } from "../models/orders";
 const router = express.Router();
+const EXPIRATION_WINDOW_SECONDS=15*60;
 router.post(
   "/api/orders/",
   requireAuth,
@@ -29,7 +30,16 @@ router.post(
     if(isReserved){
       throw new BadRequestError('Ticket is reserved')
     }
-    res.send({});
+    const expiration=new Date();
+    expiration.setSeconds(expiration.getSeconds() +EXPIRATION_WINDOW_SECONDS)
+    const order=Order.build({
+      userId: req.currentUser!.id,
+      status: OrderStatus.Created,
+      expiresAt: expiration,
+      ticket: ticket
+    })
+    await order.save()
+    res.status(201).send(order);
   },
 );
 export { router as createOrderRouterNew };
