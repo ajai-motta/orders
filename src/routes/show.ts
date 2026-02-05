@@ -15,6 +15,6 @@ router.get('/api/orders/:orderId',requireAuth,async(req: Request,res:Response)=>
     if(order.userId !== req.currentUser!.id){
         throw new NotAuthorizedError('order not in accout scope')
     }
-res.send({})
+res.send(order)
 })
 export {router as showOrdersRouter}

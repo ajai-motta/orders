@@ -4,6 +4,9 @@ import { requireAuth, validateRequest,NotFoundError,OrderStatus,BadRequestError 
 import { body } from "express-validator";
 import { Ticket } from "../models/tickets";
 import { Order } from "../models/orders";
+//nats
+import { natsWrapper } from "../nats-class-wrapper";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 const router = express.Router();
 const EXPIRATION_WINDOW_SECONDS=15*60;
 router.post(
@@ -39,6 +42,16 @@ router.post(
       ticket: ticket
     })
     await order.save()
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.userId,
+      status: order.status,
+      userId: order.userId,
+      expiresAt: expiration.toISOString(),
+      ticket: {
+        id: order.ticket.id,
+        price: order.ticket.price
+      }
+    })
     res.status(201).send(order);
   },
 );
