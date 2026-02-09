@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
 import { Order ,OrderStatus} from "./orders";
+// we do this model because we use events to communicate and store tickets seperatly in this db sepate from Tickets
 interface ticketAttrs{
+    id: string;
 title: string;
 price: number;
 }
@@ -30,7 +32,11 @@ const ticketSchema=new mongoose.Schema({
     }
 })
 ticketSchema.statics.build=(attrs:ticketAttrs)=>{
-    return new Ticket(attrs)
+    return new Ticket({
+        _id : attrs.id,
+        title: attrs.title,
+        price: attrs.price
+    })//id must be a valid objext id in the form of string dont forget it
 }
 ticketSchema.methods.isReserved=async function (){
 const exixtingOrder=await Order.findOne({

@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import { app } from './app'
 import { natsWrapper } from './nats-class-wrapper'
+import { TicketCreatedListener } from './events/listners/ticket-created-listner'
+import { TicketUpdatedListner } from './events/listners/ticket-updated-event'
 const startUp=async()=>{
   if(!process.env.JWT_KEY){
     throw new Error('No env variable')
@@ -23,6 +25,8 @@ const startUp=async()=>{
     process.on('SIGTERM',()=>natsWrapper.client.close())
     await mongoose.connect(process.env.MONGO_URI)
     console.log("Connnected to db")
+    new TicketCreatedListener(natsWrapper.client).listen()
+    new TicketUpdatedListner(natsWrapper.client).listen()
   }catch(err){
     console.log(err)
   }
