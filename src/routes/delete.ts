@@ -23,7 +23,7 @@ router.delete('/api/orders/:orderId',async(req: Request,res:Response)=>{
           id: order.userId,
           
           
-         
+         version: order.version,
           ticket: {
             id: order.ticket.id,
             

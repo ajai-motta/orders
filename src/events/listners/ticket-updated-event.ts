@@ -2,12 +2,13 @@ import { Message } from "node-nats-streaming";
 import { Listener,NotFoundError,Subjects,TicketUpdatedEvent } from "@ajaisgtickets/common";
 import {Ticket} from '../../models/tickets';
 import { queueGroupName } from "./que-group-name";
+import mongoose from "mongoose";
 export class TicketUpdatedListner extends Listener<TicketUpdatedEvent>{
 readonly subject=Subjects.TicketUpdated;
 queueGroupName=queueGroupName
-async onMessage(data: { id: string; title: string; price: number; userId: string; }, msg: Message) {
-    const {id,title,price}=data;
-    const ticket=await Ticket.findById(id)
+async onMessage(data: TicketUpdatedEvent['data'] , msg: Message) {
+    const {title,price,version}=data;
+    const ticket=await Ticket.findByPreviosVersion(data)
     if(!ticket){
         console.log('ticket not found when updating')
         throw new NotFoundError()
