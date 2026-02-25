@@ -8,6 +8,8 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     queueGroupName=queueGroupName;
     async onMessage(data: ExpirationCompleteEvent['data'], msg: Message) {
         const order=await Order.findById(data.orderId).populate('ticket')
+        console.log('order id is',data.orderId)
+        console.log(order)
         if(!order){
             throw new Error('order not found in orderexpired listener')
         }
