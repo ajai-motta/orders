@@ -4,6 +4,7 @@ import { natsWrapper } from './nats-class-wrapper'
 import { TicketCreatedListener } from './events/listners/ticket-created-listner'
 import { TicketUpdatedListner } from './events/listners/ticket-updated-event'
 import { ExpirationCompleteListener } from './events/listners/expiration-complete-listener'
+import { PaymentCreatedListener } from './events/listners/payment-created-listener'
 const startUp=async()=>{
   if(!process.env.JWT_KEY){
     throw new Error('No env variable')
@@ -29,6 +30,7 @@ const startUp=async()=>{
     new TicketCreatedListener(natsWrapper.client).listen()
     new TicketUpdatedListner(natsWrapper.client).listen()
     new ExpirationCompleteListener(natsWrapper.client).listen()
+    new PaymentCreatedListener(natsWrapper.client).listen()
   }catch(err){
     console.log(err)
   }

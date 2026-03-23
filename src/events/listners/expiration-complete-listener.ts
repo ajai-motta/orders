@@ -13,6 +13,9 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
         if(!order){
             throw new Error('order not found in orderexpired listener')
         }
+        if(order.status ===OrderStatus.Complete){
+            return msg.ack()
+        }
         order.set({status:OrderStatus.Cancelled})// to be revisited
         await order.save()
         await new OrderCancelledPublisher(this.client).publish({id: order.id,version: order.version,ticket: {id: order.ticket.id}})
